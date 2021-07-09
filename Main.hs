@@ -25,6 +25,9 @@ pitchStandard = 440.0
 f :: Semitones -> Hz
 f n = pitchStandard * (2 ** (1.0 / 12.0)) ** n 
 
+note :: Semitones -> Seconds -> [Pulse]
+note n duration = freq (f n) duration
+
 freq :: Hz -> Seconds -> [Pulse]
 freq hz duration =
   map (* volume) $ map sin $ map (* step) [0.0 .. sampleRate * duration]
@@ -32,9 +35,17 @@ freq hz duration =
     step = (hz * 2 * pi) / sampleRate
 
 wave :: [Pulse]
-wave = concat [freq (pitchStandard + i * 100.0) duration | i <- [0 .. 10]]
+wave = concat [ note 0  duration
+              , note 2  duration
+	      , note 4  duration
+	      , note 5  duration
+	      , note 7  duration
+	      , note 9  duration
+	      , note 11 duration
+	      , note 12 duration
+	      ]
   where
-    duration = 1.0
+    duration = 0.5
 
 save :: FilePath -> IO ()
 save filePath = B.writeFile filePath $ B.toLazyByteString $ fold $ map B.floatLE wave
