@@ -3,6 +3,7 @@ import qualified Data.ByteString.Builder as B
 import Data.Foldable
 import System.Process
 import Text.Printf
+import Data.List
 
 type Pulse = Float
 type Seconds = Float
@@ -30,9 +31,18 @@ note n duration = freq (f n) duration
 
 freq :: Hz -> Seconds -> [Pulse]
 freq hz duration =
-  map (* volume) $ map sin $ map (* step) [0.0 .. sampleRate * duration]
+  map (* volume) $ zipWith3 (\x y z -> x * y * z) release attack output
   where
     step = (hz * 2 * pi) / sampleRate
+    
+    attack :: [Pulse]
+    attack = map (min 1.0) [0.0, 0.001 ..]
+    
+    release :: [Pulse]
+    release = reverse $ take (length output) attack
+    
+    output :: [Pulse]
+    output = map sin $ map (* step) [0.0 .. sampleRate * duration]
 
 wave :: [Pulse]
 wave = concat [ note 0  duration
