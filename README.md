@@ -6,4 +6,6 @@ Second of all, the wave has to be converted into a ByteString-format which allow
 
 For this, both libaries Data.ByteString.Lazy and Data.ByteString.Builder needs to be imported as namespaces B since they have functions which are also defined outside of the libaries e.g. map. You can then access the map function within the Data.ByteString libary by typing B.map.
 
-To interpret the ByteString file to actual sound, I used the program ffplay. Its an audio/video output program for the command line. 
+The Data.ByteString builder is used first, to convert the list of Floats given by the sinus wave into a number of builders (b.floatLE) which furthermore can be assigned to the fold function, accessed by the use of the Data.Foldable libary. The fold function aggregates the list of builders into one builder. 
+
+To interpret the ByteString file into actual audio signals, I used the program ffplay. Its an audio/video output program for the command line. 
